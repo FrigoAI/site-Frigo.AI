@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Assistente de Câmaras Frias</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        #chat {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            background: white;
+        }
+        input, button {
+            padding: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Assistente Virtual - Câmaras Frias</h1>
+
+    <div id="chat"></div>
+
+    <input type="text" id="userInput" placeholder="Digite sua pergunta..." />
+    <button onclick="enviarPergunta()">Enviar</button>
+
+    <script>
+        function enviarPergunta() {
+            const input = document.getElementById('userInput');
+            const chat = document.getElementById('chat');
+            const pergunta = input.value.trim().toLowerCase();
+    
+            if (pergunta === '') return;
+    
+            chat.innerHTML += "<p><strong>Você:</strong> " + pergunta + "</p>";
+    
+            let resposta = "";
+    
+            if (pergunta.includes("conserto") || pergunta.includes("arrumar") || pergunta.includes("reparo")) {
+                resposta = "Sim! Realizamos conserto de câmaras frias 24h.";
+            } else if (pergunta.includes("manutenção") || pergunta.includes("manter") || pergunta.includes("preventiva")) {
+                resposta = "Fazemos manutenção preventiva e corretiva para câmaras frias.";
+            } else if (pergunta.includes("preço") || pergunta.includes("valor") || pergunta.includes("custa")) {
+                resposta = "Entre em contato pelo nosso WhatsApp para orçamento imediato!";
+            } else if (pergunta.includes("emergência") || pergunta.includes("urgência")) {
+                resposta = "Atendemos emergências 24h! Ligue agora para (XX) XXXXX-XXXX.";
+            } else {
+                resposta = "Desculpe, não entendi muito bem. Pode tentar perguntar de outro jeito?";
+            }
+    
+            chat.innerHTML += "<p><strong>Assistente:</strong> " + resposta + "</p>";
+            chat.scrollTop = chat.scrollHeight;
+            input.value = "";
+        }
+    </script>
+    
+
+</body>
+</html>
