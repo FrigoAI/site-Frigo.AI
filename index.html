@@ -1,67 +1,464 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Assistente de Câmaras Frias</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f0f8ff;
-        }
-        #chat {
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 300px;
-            overflow-y: auto;
-            background: white;
-        }
-        input, button {
-            padding: 10px;
-            margin-top: 10px;
-            width: 100%;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Frigo.AI - Assistente Virtual</title>
+  <link rel="icon" href="favicon.ico.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('fundo.jpg.png') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      color: white;
+      margin-top: 20px;
+      font-size: 48px;
+      text-align: center;
+    }
+    #loginArea, #chatArea, #adminArea, #faqArea, #suporteArea, #portfolioArea {
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      margin-top: 20px;
+      color: white;
+    }
+    input, select, textarea {
+      width: 90%;
+      padding: 10px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 20px;
+      margin: 5px;
+      border: none;
+      background-color: #00aaff;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0088cc;
+    }
+    #chat {
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .hidden {
+      display: none;
+    }
+    canvas {
+      background: white;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    #adminBtn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      opacity: 0.3;
+    }
+    #adminBtn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    nav {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    nav button {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    .faq-item {
+      margin-bottom: 10px;
+    }
+    .faq-question {
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .faq-answer {
+      display: none;
+      margin-top: 5px;
+    }
+    #planilhaArea table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  color: black;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+#planilhaArea th, #planilhaArea td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+#planilhaArea th {
+  background-color: #00aaff;
+  color: white;
+}
+
+  </style>
 </head>
 <body>
+  <button id="adminBtn" onclick="acessarAdmin()">Admin</button>
+  <h1>Frigo.AI</h1>
+  <nav>
+    <button onclick="mostrarArea('chatArea')">Chat</button>
+    <button onclick="mostrarArea('faqArea')">FAQ</button>
+    <button onclick="mostrarArea('suporteArea')">Suporte</button>
+    <button onclick="mostrarArea('portfolioArea')">Portfólio</button>
+  </nav>
+  
 
-    <h1>Assistente Virtual - Câmaras Frias</h1>
+  <div id="loginArea">
+    <h2>Login ou Cadastro</h2>
+    <input type="text" id="usuario" placeholder="Usuário">
+    <input type="password" id="senha" placeholder="Senha">
+    <input type="text" id="codigoProduto" placeholder="Código do Produto">
+    <button onclick="fazerLogin()">Entrar</button>
+    <button onclick="fazerCadastro()">Cadastrar</button>
+  </div>
+  
 
+  <div id="chatArea" class="hidden">
+    <h2>Bem-vindo(a), <span id="clienteNome"></span></h2>
     <div id="chat"></div>
+    <input type="text" id="userInput" placeholder="Digite sua mensagem...">
+    <button onclick="sendMessage()">Enviar</button>
+    <button onclick="abrirAgendamento()">Agendar Manutenção</button>
+    <div id="agendamentoForm" class="hidden">
+      <input type="date" id="dataManutencao">
+      <button onclick="salvarAgendamento()">Confirmar Agendamento</button>
+    </div>
+  </div>
 
-    <input type="text" id="userInput" placeholder="Digite sua pergunta..." />
-    <button onclick="enviarPergunta()">Enviar</button>
+  <div id="faqArea" class="hidden">
+    <h2>Perguntas Frequentes</h2>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">Como agendar uma manutenção?</div>
+      <div class="faq-answer">Faça login, vá para o chat e clique em "Agendar Manutenção".</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">Qual o horário de atendimento?</div>
+      <div class="faq-answer">Atendemos 24 horas em regime de plantão emergencial.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">Vocês oferecem garantia?</div>
+      <div class="faq-answer">Sim, 3 meses para serviços e peças instaladas.</div>
+    </div>
+  </div>
 
-    <script>
-        function enviarPergunta() {
-            const input = document.getElementById('userInput');
-            const chat = document.getElementById('chat');
-            const pergunta = input.value.trim().toLowerCase();
+  <div id="suporteArea" class="hidden">
+    <h2>Suporte Técnico</h2>
+    <p>Em caso de urgência, entre em contato:</p>
+    <p>📞 (11) 99999-9999<br>📧 suporte@frigoai.com</p>
+    <textarea placeholder="Descreva o problema..." rows="5"></textarea>
+    <button>Enviar Mensagem</button>
+  </div>
+
+  <div id="portfolioArea" class="hidden">
+    <h2>Nosso Portfólio</h2>
+    <ul>
+      <li>✅ Manutenção em supermercados (Rede Super+)</li>
+      <li>✅ Instalação em restaurantes (Cozinha Fria Gourmet)</li>
+      <li>✅ Contratos com indústrias (Frigorífico Sul)</li>
+    </ul>
+  </div>
+  <div id="planilhaArea" class="hidden">
+    <h2>Planilha de Equipamento</h2>
+    <div id="tabelaPlanilha"></div>
+    <button onclick="gerarGrafico()">Gerar Gráfico</button>
+    <canvas id="graficoManutencao" width="400" height="200" class="hidden"></canvas>
+  </div>
+  
+  
+  <div id="adminArea" class="hidden">
+    <h2>Área do Administrador</h2>
+    <div id="listaAgendamentos"></div>
+    <canvas id="graficoManutencoes" width="400" height="200"></canvas>
+    <button onclick="sairAdmin()">Sair do Admin</button>
+  </div>
+
+<script>
+  const usuarios = JSON.parse(localStorage.getItem('usuarios')) || {};
+  const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
+  let usuarioLogado = null;
+
+  function salvarUsuarios() {
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+  }
+
+  function salvarAgendamentos() {
+    localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
+  }
+
+  function mostrarArea(area) {
+    ['chatArea','faqArea','suporteArea','portfolioArea','adminArea'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(area).classList.remove('hidden');
+  }
+
+  function toggleFaq(el) {
+    const resposta = el.nextElementSibling;
+    resposta.style.display = resposta.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function fazerCadastro() {
+    const nome = prompt('Digite o nome do novo cliente:');
+    const senha = prompt('Digite a senha:');
+    if (nome && senha && !usuarios[nome]) {
+      usuarios[nome] = { senha, historico: [] };
+      salvarUsuarios();
+      alert('Cadastro realizado com sucesso!');
+    } else {
+      alert('Nome já cadastrado ou inválido.');
+    }
+  }
+  const produtos = [
+  { id: 'CAM001', nome: 'Câmara Fria Principal', local: 'Depósito A', dataInicio: '2025-02-01', dataFim: '2025-05-01', status: 'OK', responsavel: 'João' },
+  { id: 'FRZ002', nome: 'Freezer Vertical', local: 'Cozinha', dataInicio: '2025-01-15', dataFim: '2025-04-15', status: 'Atrasado', responsavel: 'Maria' },
+  { id: 'SAM003', nome: 'Câmara Auxiliar', local: 'Depósito B', dataInicio: '2023-01-12', dataFim: '2025-07-25', status: 'OK', responsavel: 'Carlos' }
+];
+
+function mostrarPlanilha() {
+  const codigoProduto = document.getElementById('codigoProduto').value.toUpperCase();
+  const produto = produtos.find(p => p.id === codigoProduto);
+
+  if (produto) {
+    let tabelaHtml = `
+      <table border="1" cellpadding="10">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Equipamento</th>
+            <th>Local</th>
+            <th>Data Início</th>
+            <th>Data Fim</th>
+            <th>Status</th>
+            <th>Responsável</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${produto.id}</td>
+            <td>${produto.nome}</td>
+            <td>${produto.local}</td>
+            <td>${produto.dataInicio}</td>
+            <td>${produto.dataFim}</td>
+            <td>${produto.status}</td>
+            <td>${produto.responsavel}</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
     
-            if (pergunta === '') return;
+    document.getElementById('tabelaPlanilha').innerHTML = tabelaHtml;
+    document.getElementById('planilhaArea').classList.remove('hidden');
+  } else {
+    alert('Produto não encontrado.');
+  }
+}
+
+function fazerLogin() {
+  const nome = document.getElementById('usuario').value;
+  const senha = document.getElementById('senha').value;
+  const codigoProduto = document.getElementById('codigoProduto').value.toUpperCase();
+
+  if (usuarios[nome] && usuarios[nome].senha === senha) {
+    usuarioLogado = nome;
+    document.getElementById('clienteNome').textContent = nome;
+    document.getElementById('loginArea').classList.add('hidden');
     
-            chat.innerHTML += "<p><strong>Você:</strong> " + pergunta + "</p>";
+    // Exibe a planilha
+    mostrarPlanilha();
     
-            let resposta = "";
-    
-            if (pergunta.includes("conserto") || pergunta.includes("arrumar") || pergunta.includes("reparo")) {
-                resposta = "Sim! Realizamos conserto de câmaras frias 24h.";
-            } else if (pergunta.includes("manutenção") || pergunta.includes("manter") || pergunta.includes("preventiva")) {
-                resposta = "Fazemos manutenção preventiva e corretiva para câmaras frias.";
-            } else if (pergunta.includes("preço") || pergunta.includes("valor") || pergunta.includes("custa")) {
-                resposta = "Entre em contato pelo nosso WhatsApp para orçamento imediato!";
-            } else if (pergunta.includes("emergência") || pergunta.includes("urgência")) {
-                resposta = "Atendemos emergências 24h! Ligue agora para (XX) XXXXX-XXXX.";
-            } else {
-                resposta = "Desculpe, não entendi muito bem. Pode tentar perguntar de outro jeito?";
-            }
-    
-            chat.innerHTML += "<p><strong>Assistente:</strong> " + resposta + "</p>";
-            chat.scrollTop = chat.scrollHeight;
-            input.value = "";
+    addMessage('Frigo.AI: Olá ' + nome + '! Em que posso ajudar hoje?');
+  } else {
+    alert('Usuário, senha ou código do produto incorretos.');
+  }
+}
+
+
+  function acessarAdmin() {
+    const senha = prompt('Senha do administrador:');
+    if (senha === 'admin123') {
+      document.getElementById('loginArea').classList.add('hidden');
+      mostrarArea('adminArea');
+      listarAgendamentos();
+      desenharGrafico();
+    } else {
+      alert('Senha incorreta.');
+    }
+  }
+
+  function sairAdmin() {
+    mostrarArea('loginArea');
+  }
+
+  function abrirAgendamento() {
+    document.getElementById('agendamentoForm').classList.toggle('hidden');
+  }
+
+  function salvarAgendamento() {
+    const data = document.getElementById('dataManutencao').value;
+    if (data) {
+      const agendamento = {
+        cliente: usuarioLogado,
+        data,
+        status: 'Agendado'
+      };
+      agendamentos.push(agendamento);
+      usuarios[usuarioLogado].historico.push(data);
+      salvarAgendamentos();
+      salvarUsuarios();
+      addMessage('Frigo.AI: Agendamento confirmado para ' + data);
+      document.getElementById('agendamentoForm').classList.add('hidden');
+    } else {
+      alert('Escolha uma data válida.');
+    }
+  }
+
+  function listarAgendamentos() {
+    const lista = document.getElementById('listaAgendamentos');
+    lista.innerHTML = '<h3>Agendamentos:</h3>';
+    agendamentos.forEach(a => {
+      lista.innerHTML += `<p><strong>${a.cliente}</strong> - ${a.data} (${a.status})</p>`;
+    });
+  }
+
+  function desenharGrafico() {
+    const contagem = {};
+    agendamentos.forEach(a => {
+      const mes = new Date(a.data).toLocaleString('pt-BR', { month: 'short', year: 'numeric' });
+      contagem[mes] = (contagem[mes] || 0) + 1;
+    });
+    const ctx = document.getElementById('graficoManutencoes').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(contagem),
+        datasets: [{
+          label: 'Manutenções por Mês',
+          data: Object.values(contagem),
+          backgroundColor: 'rgba(0, 170, 255, 0.6)'
+        }]
+      },
+      options: {
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  function addMessage(texto) {
+    const chat = document.getElementById('chat');
+    const div = document.createElement('div');
+    div.textContent = texto;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('userInput');
+    const msg = input.value.trim();
+    if (msg) {
+      addMessage('Você: ' + msg);
+      respostaBot(msg);
+      input.value = '';
+    }
+  }
+
+  function respostaBot(msg) {
+  msg = msg.toLowerCase();
+  if (msg.includes("faq")) {
+    addMessage("Frigo.AI: Consulte a seção de FAQ clicando no botão FAQ acima.");
+  } else if (msg.includes("suporte")) {
+    addMessage("Frigo.AI: Você pode obter suporte técnico clicando em 'Suporte'.");
+  } else if (msg.includes("portfólio")) {
+    addMessage("Frigo.AI: Veja nossos projetos na aba Portfólio.");
+  } else if (msg.includes("agendar")) {
+    addMessage("Frigo.AI: Clique em 'Agendar Manutenção' para escolher a data.");
+  } else if (msg.includes("vazamento")) {
+    addMessage("Frigo.AI: Vazamentos geralmente vêm de conexões soltas ou tubos com furos. Verifique mangueiras e dreno. Se for gás, chame um técnico.");
+  } else if (msg.includes("gás") || msg.includes("refrigerante")) {
+    addMessage("Frigo.AI: Se não está gelando, pode faltar gás refrigerante. É necessário chamar um técnico para medir e recarregar com segurança.");
+  } else if (msg.includes("gelando") || msg.includes("não está gelando")) {
+    addMessage("Frigo.AI: Pode ser termostato com defeito, ventilador parado ou falta de gás. Veja se o ventilador está ligado e se há acúmulo de gelo.");
+  } else if (msg.includes("descongela") || msg.includes("gelo demais")) {
+    addMessage("Frigo.AI: Pode ser falha no degelo. Verifique o timer, resistência ou sensores. Não deixe a porta aberta por muito tempo.");
+  } else {
+    addMessage("Frigo.AI: Desculpe, não entendi sua pergunta. Tente algo como 'vazamento', 'gás', 'gelando', 'FAQ' ou 'suporte'.");
+  }
+}
+function gerarGrafico() {
+  const codigoProduto = document.getElementById('codigoProduto').value.toUpperCase();
+  const produto = produtos.find(p => p.id === codigoProduto);
+  if (!produto) {
+    alert("Produto não encontrado para gerar gráfico.");
+    return;
+  }
+
+  const ctx = document.getElementById('graficoManutencao').getContext('2d');
+  document.getElementById('graficoManutencao').classList.remove('hidden');
+
+  // Limpa gráfico anterior (caso já exista)
+  if (window.graficoAtivo) {
+    window.graficoAtivo.destroy();
+  }
+
+  const dataInicio = new Date(produto.dataInicio);
+  const dataFim = new Date(produto.dataFim);
+  const diasTotais = Math.round((dataFim - dataInicio) / (1000 * 60 * 60 * 24));
+
+  window.graficoAtivo = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Período de Manutenção'],
+      datasets: [{
+        label: produto.nome,
+        data: [diasTotais],
+        backgroundColor: ['#00aaff']
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Dias de manutenção'
+          }
         }
-    </script>
-    
+      }
+    }
+  });
+}
+
+</script><script src="chat-inteligente.js"></script>
 
 </body>
 </html>
