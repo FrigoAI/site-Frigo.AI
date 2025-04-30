@@ -131,6 +131,10 @@
     <button onclick="mostrarArea('faqArea')">FAQ</button>
     <button onclick="mostrarArea('suporteArea')">Suporte</button>
     <button onclick="mostrarArea('portfolioArea')">Portfólio</button>
+    <button onclick="mostrarArea('depoimentosArea')">Depoimentos</button>
+    <button onclick="mostrarArea('mapaArea')">Cobertura</button>
+
+
   </nav>
   
 
@@ -150,6 +154,9 @@
     <input type="text" id="userInput" placeholder="Digite sua mensagem...">
     <button onclick="sendMessage()">Enviar</button>
     <button onclick="abrirAgendamento()">Agendar Manutenção</button>
+    <input type="file" accept="image/*" onchange="mostrarNomeArquivo(this)">
+<p id="arquivoSelecionado" style="color: lightgray;"></p>
+
     <div id="agendamentoForm" class="hidden">
       <input type="date" id="dataManutencao">
       <button onclick="salvarAgendamento()">Confirmar Agendamento</button>
@@ -182,12 +189,26 @@
 
   <div id="portfolioArea" class="hidden">
     <h2>Nosso Portfólio</h2>
-    <ul>
-      <li>✅ Manutenção em supermercados (Rede Super+)</li>
-      <li>✅ Instalação em restaurantes (Cozinha Fria Gourmet)</li>
-      <li>✅ Contratos com indústrias (Frigorífico Sul)</li>
-    </ul>
+  
+    <div style="margin-bottom: 20px;">
+      <h3>❄️ Câmara Fria com Gelo Excessivo</h3>
+      <p>Antes da manutenção, havia acúmulo de gelo no evaporador, prejudicando o funcionamento. Após limpeza e ajuste do sistema de degelo, o equipamento voltou a operar normalmente.</p>
+      <img src="antesdps1.jpeg" alt="Câmara fria antes e depois" style="width: 100%; border-radius: 10px;">
+    </div>
+  
+    <div style="margin-bottom: 20px;">
+      <h3>🧊 Unidade Condensadora Enferrujada</h3>
+      <p>Unidade externa com ferrugem foi restaurada com limpeza, pintura anticorrosiva e revisão completa.</p>
+      <img src="antesdps2.jpeg" alt="Condensadora antes e depois" style="width: 100%; border-radius: 10px;">
+    </div>
+  
+    <div style="margin-bottom: 20px;">
+      <h3>⚡ Painel Elétrico danificado</h3>
+      <p>Foi realizada substituição de controladores, reorganização de fiação e higienização para restaurar a segurança e confiabilidade do sistema.</p>
+      <img src="antesdps3.jpeg" alt="Painel elétrico antes e depois" style="width: 100%; border-radius: 10px;">
+    </div>
   </div>
+  
   <div id="planilhaArea" class="hidden">
     <h2>Planilha de Equipamento</h2>
     <div id="tabelaPlanilha"></div>
@@ -202,7 +223,19 @@
     <canvas id="graficoManutencoes" width="400" height="200"></canvas>
     <button onclick="sairAdmin()">Sair do Admin</button>
   </div>
-
+  <div id="depoimentosArea" class="hidden">
+    <h2>Depoimentos de Clientes</h2>
+    <blockquote>⭐️⭐️⭐️⭐️⭐️ "Resolveram tudo no mesmo dia!" – Ze Carnes</blockquote>
+    <blockquote>⭐️⭐️⭐️⭐️ "Atendimento rápido e profissional." – Super Frio</blockquote>
+    <blockquote>⭐️⭐️⭐️⭐️⭐️ "Excelente manutenção e cuidado com nosso estoque." – FrioSul</blockquote>
+  </div>
+  <div id="mapaArea" class="hidden">
+    <h2>Área de Atendimento</h2>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d123550.49440655386!2d-42.81740535450596!3d-5.089555209445351!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1spt-BR!2sbr!4v1745981239381!5m2!1spt-BR!2sbr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" 
+      width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy">
+    </iframe>
+  </div>
+  
 <script>
   const usuarios = JSON.parse(localStorage.getItem('usuarios')) || {};
   const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
@@ -413,6 +446,7 @@ function fazerLogin() {
   } else {
     addMessage("Frigo.AI: Desculpe, não entendi sua pergunta. Tente algo como 'vazamento', 'gás', 'gelando', 'FAQ' ou 'suporte'.");
   }
+  
 }
 function gerarGrafico() {
   const codigoProduto = document.getElementById('codigoProduto').value.toUpperCase();
@@ -456,6 +490,10 @@ function gerarGrafico() {
       }
     }
   });
+}
+function mostrarNomeArquivo(input) {
+  const nome = input.files[0]?.name || "Nenhum arquivo selecionado.";
+  document.getElementById('arquivoSelecionado').textContent = "Selecionado: " + nome;
 }
 
 </script><script src="chat-inteligente.js"></script>
